@@ -1,0 +1,678 @@
+{
+  "info": {
+    "name": "Intelligent Recruitment Management Platform API",
+    "description": "Complete Postman collection for the AI-powered Recruitment Management Platform backend. Covers Auth, Candidate, Jobs, Recruiter, Interview, Admin, AI, and Notification endpoints. Login/register/create requests include test scripts that automatically save tokens and IDs into collection variables so subsequent requests work out of the box.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "b1a2c3d4-1111-2222-3333-recruitai0001"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "recruiterToken", "value": "", "type": "string" },
+    { "key": "candidateToken", "value": "", "type": "string" },
+    { "key": "candidate2Token", "value": "", "type": "string" },
+    { "key": "candidateId", "value": "", "type": "string" },
+    { "key": "candidate2Id", "value": "", "type": "string" },
+    { "key": "jobId", "value": "", "type": "string" },
+    { "key": "applicationId", "value": "", "type": "string" },
+    { "key": "interviewId", "value": "", "type": "string" },
+    { "key": "notificationId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register - Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Platform Admin\",\n  \"email\": \"admin@recruitai.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"admin\",\n  \"phone\": \"+10000000000\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] },
+            "description": "Note: the API forces public self-registration to 'candidate' role by default. To seed a real admin, use `npm run seed` or manually update the role in MongoDB."
+          }
+        },
+        {
+          "name": "Register - Recruiter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('recruiterToken', res.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Sarah Recruiter\",\n  \"email\": \"recruiter@recruitai.com\",\n  \"password\": \"Recruiter@123\",\n  \"role\": \"recruiter\",\n  \"phone\": \"+10000000001\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Register - Candidate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('candidateToken', res.data.token);",
+                  "  pm.collectionVariables.set('candidateId', res.data.user._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Candidate\",\n  \"email\": \"john@recruitai.com\",\n  \"password\": \"Candidate@123\",\n  \"role\": \"candidate\",\n  \"phone\": \"+10000000002\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Register - Candidate 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('candidate2Token', res.data.token);",
+                  "  pm.collectionVariables.set('candidate2Id', res.data.user._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Jane Applicant\",\n  \"email\": \"jane@recruitai.com\",\n  \"password\": \"Candidate@123\",\n  \"role\": \"candidate\",\n  \"phone\": \"+10000000003\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('adminToken', res.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@recruitai.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "description": "Use this after seeding the database (npm run seed) so the admin account actually exists with the admin role."
+          }
+        },
+        {
+          "name": "Login - Recruiter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('recruiterToken', res.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"recruiter@recruitai.com\",\n  \"password\": \"Recruiter@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Candidate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('candidateToken', res.data.token);",
+                  "  pm.collectionVariables.set('candidateId', res.data.user._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@recruitai.com\",\n  \"password\": \"Candidate@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/profile", "host": ["{{baseUrl}}"], "path": ["api", "auth", "profile"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Candidate",
+      "item": [
+        {
+          "name": "Get My Candidate Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/candidate/profile", "host": ["{{baseUrl}}"], "path": ["api", "candidate", "profile"] }
+          }
+        },
+        {
+          "name": "Update My Candidate Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skills\": [\"javascript\", \"node.js\", \"express\", \"mongodb\", \"react\"],\n  \"education\": [\n    {\n      \"degree\": \"B.Tech Computer Science\",\n      \"institution\": \"State University\",\n      \"fieldOfStudy\": \"Computer Science\",\n      \"startYear\": 2016,\n      \"endYear\": 2020\n    }\n  ],\n  \"experience\": [\n    {\n      \"title\": \"Backend Developer\",\n      \"company\": \"TechCorp\",\n      \"startDate\": \"2020-07-01\",\n      \"isCurrent\": true,\n      \"description\": \"Building REST APIs with Node.js and Express.\"\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/candidate/profile", "host": ["{{baseUrl}}"], "path": ["api", "candidate", "profile"] }
+          }
+        },
+        {
+          "name": "Upload Resume (PDF/DOCX)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "resume", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/candidate/uploadResume", "host": ["{{baseUrl}}"], "path": ["api", "candidate", "uploadResume"] },
+            "description": "Select a local PDF or DOCX file in the 'resume' form field (Postman: click 'Select Files')."
+          }
+        },
+        {
+          "name": "Browse Jobs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/candidate/jobs?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "candidate", "jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "location", "value": "", "disabled": true },
+                { "key": "skill", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Apply to Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.application) {",
+                  "  pm.collectionVariables.set('applicationId', res.data.application._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/candidate/apply/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "candidate", "apply", "{{jobId}}"]
+            },
+            "description": "Requires a resume to already be uploaded via 'Upload Resume'."
+          }
+        },
+        {
+          "name": "Get My Applications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/candidate/applications", "host": ["{{baseUrl}}"], "path": ["api", "candidate", "applications"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Create Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.job) {",
+                  "  pm.collectionVariables.set('jobId', res.data.job._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Backend Developer (Node.js)\",\n  \"company\": \"RecruitAI Technologies\",\n  \"location\": \"Remote\",\n  \"description\": \"We are looking for a skilled backend developer experienced with Node.js, Express, and MongoDB to build scalable REST APIs.\",\n  \"requiredSkills\": [\"javascript\", \"node.js\", \"express\", \"mongodb\", \"rest api\"],\n  \"experience\": \"2-4 years\",\n  \"salary\": \"$70,000 - $90,000\",\n  \"deadline\": \"2026-12-31\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/jobs", "host": ["{{baseUrl}}"], "path": ["api", "jobs"] }
+          }
+        },
+        {
+          "name": "Get All Jobs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "mine", "value": "true", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Job By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"] }
+          }
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salary\": \"$75,000 - $95,000\",\n  \"isActive\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"] }
+          }
+        },
+        {
+          "name": "Get Job Applicants (AI Ranked)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/jobs/{{jobId}}/applicants", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}", "applicants"] }
+          }
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"] },
+            "description": "Run this LAST, since other requests in this collection depend on {{jobId}} existing."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recruiter",
+      "item": [
+        {
+          "name": "Shortlist Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortlisted\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recruiter/shortlist/{{applicationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recruiter", "shortlist", "{{applicationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Application Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"selected\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recruiter/applications/{{applicationId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recruiter", "applications", "{{applicationId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Send Notification to Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Quick Update\",\n  \"message\": \"Thanks for applying! We'll be in touch soon.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recruiter/notify/{{candidateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recruiter", "notify", "{{candidateId}}"]
+            }
+          }
+        },
+        {
+          "name": "Recruiter Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/recruiter/dashboard", "host": ["{{baseUrl}}"], "path": ["api", "recruiter", "dashboard"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Interview",
+      "item": [
+        {
+          "name": "Schedule Interview",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.interview) {",
+                  "  pm.collectionVariables.set('interviewId', res.data.interview._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"date\": \"2026-08-15T10:00:00.000Z\",\n  \"meetingLink\": \"https://meet.google.com/abc-defg-hij\",\n  \"interviewer\": \"Sarah Recruiter\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/interview/schedule", "host": ["{{baseUrl}}"], "path": ["api", "interview", "schedule"] }
+          }
+        },
+        {
+          "name": "Get Interview Details",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/interview/{{interviewId}}", "host": ["{{baseUrl}}"], "path": ["api", "interview", "{{interviewId}}"] }
+          }
+        },
+        {
+          "name": "Submit Candidate Answers",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\n    { \"index\": 0, \"candidateAnswer\": \"I have used this extensively to build REST APIs...\" },\n    { \"index\": 1, \"candidateAnswer\": \"One challenge I solved was optimizing a slow query...\" }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/interview/{{interviewId}}/answers", "host": ["{{baseUrl}}"], "path": ["api", "interview", "{{interviewId}}", "answers"] }
+          }
+        },
+        {
+          "name": "Submit Interview Feedback (Recruiter)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"score\": 85,\n  \"feedback\": \"Strong technical answers, good communication.\",\n  \"questionScores\": [\n    { \"index\": 0, \"answerScore\": 9 },\n    { \"index\": 1, \"answerScore\": 8 }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/interview/{{interviewId}}/feedback", "host": ["{{baseUrl}}"], "path": ["api", "interview", "{{interviewId}}", "feedback"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "role", "value": "candidate", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/user/{{candidate2Id}}", "host": ["{{baseUrl}}"], "path": ["api", "admin", "user", "{{candidate2Id}}"] }
+          }
+        },
+        {
+          "name": "Get All Jobs (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/jobs", "host": ["{{baseUrl}}"], "path": ["api", "admin", "jobs"] }
+          }
+        },
+        {
+          "name": "Remove Job (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "admin", "jobs", "{{jobId}}"] }
+          }
+        },
+        {
+          "name": "Get Platform Reports",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/reports", "host": ["{{baseUrl}}"], "path": ["api", "admin", "reports"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Parse Resume",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "resume", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/ai/parseResume", "host": ["{{baseUrl}}"], "path": ["api", "ai", "parseResume"] }
+          }
+        },
+        {
+          "name": "Rank Candidates for a Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": \"{{jobId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/ai/rankCandidates", "host": ["{{baseUrl}}"], "path": ["api", "ai", "rankCandidates"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.notifications && res.data.notifications.length) {",
+                  "  pm.collectionVariables.set('notificationId', res.data.notifications[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications?unreadOnly=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [{ "key": "unreadOnly", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "Mark Notification As Read",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/notifications/read/{{notificationId}}", "host": ["{{baseUrl}}"], "path": ["api", "notifications", "read", "{{notificationId}}"] }
+          }
+        },
+        {
+          "name": "Mark All Notifications As Read",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/notifications/read-all", "host": ["{{baseUrl}}"], "path": ["api", "notifications", "read-all"] }
+          }
+        }
+      ]
+    }
+  ]
+}
